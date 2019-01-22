@@ -1,3 +1,6 @@
+#ifndef EIGEN_CXX11_TENSOR_MODULE
+#define EIGEN_CXX11_TENSOR_MODULE
+
 #include "unsupported/Eigen/CXX11/Tensor"
 
 #ifdef _WIN32
@@ -13,3 +16,5 @@ inline void sleep(unsigned int seconds) { Sleep(1000*seconds); }
 #undef ERROR
 #undef LoadLibrary
 #endif  // _WIN32
+
+#endif

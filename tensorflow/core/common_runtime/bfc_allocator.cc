@@ -39,7 +39,7 @@ BFCAllocator::BFCAllocator(SubAllocator* sub_allocator, size_t total_memory,
     // 1MiB smallest initial allocation, unless total memory available
     // is less.
     curr_region_allocation_bytes_ =
-        RoundedBytes(std::min(total_memory, size_t{1048576}));
+        RoundedBytes(std::min(total_memory, size_t{1024}));
   } else {
     curr_region_allocation_bytes_ = RoundedBytes(total_memory);
   }
@@ -102,7 +102,7 @@ bool BFCAllocator::Extend(size_t alignment, size_t rounded_bytes) {
   // sufficient.
   bool increased_allocation = false;
   while (rounded_bytes > curr_region_allocation_bytes_) {
-    curr_region_allocation_bytes_ *= 2;
+    curr_region_allocation_bytes_ = curr_region_allocation_bytes_ * 11 / 10;
     increased_allocation = true;
   }
 

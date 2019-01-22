@@ -1,1 +1,6 @@
+#ifndef EIGEN_CXX11_SVD_MODULE
+#define EIGEN_CXX11_SVD_MODULE
+
 #include "Eigen/SVD"
+
+#endif

@@ -1,1 +1,6 @@
+#ifndef EIGEN_CXX11_QR_MODULE
+#define EIGEN_CXX11_QR_MODULE
+
 #include "Eigen/QR"
+
+#endif

@@ -1,3 +1,10 @@
+This is a slightly modified copy of TensorFlow  r1.10. The changes allow full GPU memory deallocation, and enable flawless (at least on my machine) compilation with CMake, MSVC++ 2017 and CUDA 10.0 on Windows. It also includes precompiled static libraries that can be linked in a C++ project to use TF's C or C++ APIs.
+
+
+
+
+# Original README below:
+
 <div align="center">
   <img src="https://www.tensorflow.org/images/tf_logo_transp.png"><br><br>
 </div>

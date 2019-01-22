@@ -1,1 +1,6 @@
+#ifndef EIGEN_CXX11_MATFUN_MODULE
+#define EIGEN_CXX11_MATFUN_MODULE
+
 #include "unsupported/Eigen/MatrixFunctions"
+
+#endif

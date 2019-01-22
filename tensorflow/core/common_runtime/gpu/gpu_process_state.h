@@ -85,6 +85,8 @@ class GPUProcessState {
   typedef std::function<void(void*, size_t)> AllocVisitor;
   virtual void AddGPUAllocVisitor(int bus_id, const AllocVisitor& visitor);
 
+  virtual ~GPUProcessState();
+
  protected:
   GPUProcessState();
 
@@ -106,8 +108,6 @@ class GPUProcessState {
   std::vector<VisitableAllocator*> gpu_allocators_ GUARDED_BY(mu_);
   std::vector<std::vector<AllocVisitor>> gpu_visitors_ GUARDED_BY(mu_);
   std::vector<Allocator*> cuda_host_allocators_ GUARDED_BY(mu_);
-
-  virtual ~GPUProcessState();
 
   // Optional RecordingAllocators that wrap the corresponding
   // Allocators for runtime attribute use analysis.

@@ -69,6 +69,8 @@ class ProcessState {
 
   typedef std::unordered_map<const void*, MemDesc> MDMap;
 
+  virtual ~ProcessState();
+
  protected:
   ProcessState();
   friend class GPUProcessState;
@@ -88,8 +90,6 @@ class ProcessState {
   mutex mu_;
 
   std::vector<Allocator*> cpu_allocators_ GUARDED_BY(mu_);
-
-  virtual ~ProcessState();
 
   // Optional RecordingAllocators that wrap the corresponding
   // Allocators for runtime attribute use analysis.

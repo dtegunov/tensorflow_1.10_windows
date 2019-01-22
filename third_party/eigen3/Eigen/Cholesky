@@ -1,1 +1,6 @@
+#ifndef EIGEN_CXX11_CHOLESKY_MODULE
+#define EIGEN_CXX11_CHOLESKY_MODULE
+
 #include "Eigen/Cholesky"
+
+#endif
