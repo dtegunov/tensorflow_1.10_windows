@@ -1,7 +1,139 @@
-This is a slightly modified copy of TensorFlow  r1.10. The changes allow full GPU memory deallocation, and enable flawless (at least on my machine) compilation with CMake, MSVC++ 2017 and CUDA 10.0 on Windows. It also includes precompiled static libraries that can be linked in a C++ project to use TF's C or C++ APIs.
+# About this modified version:
+This is a slightly modified copy of TensorFlow  r1.10. The changes allow full GPU memory deallocation, and enable flawless (at least on my machine) compilation with CMake, MSVC++ 2017 and CUDA 10.0 on Windows.
+
+To compile the static libraries successfully, I used:
+* Visual Studio 2017 (updated to latest version as of November 2018)
+* CUDA 10.0
+* CUDNN 7.5
+* CMake 3.12.3
+* swigwin 3.0.12
+* Python 3.5
+
+## Compile static libraries
+
+* Open "x64 Native Tools Command Prompt for VS 2017" to get a command line properly configured for MSVC 2017.
+* Navigate to /tensorflow/contrib/cmake.
+* If you want to compile the code for a CUDA CC other than 5.2, 6.1, 7.0 or 7.5, modify the CMakeLists.txt file accordingly (just search for one of those numbers; CC and the corresponding flags are defined in several places in the file).
+* `mkdir build`
+* `cd build`
+* Modify the paths accordingly and execute:
+```
+cmake .. -DCMAKE_GENERATOR="Visual Studio 15 2017 Win64" ^
+-DCMAKE_BUILD_TYPE=Release ^
+-DSWIG_EXECUTABLE="C:\Program Files\swigwin-3.0.12\swig.exe" ^
+-DPYTHON_EXECUTABLE="C:\Program Files\Python35\python.exe" ^
+-DPYTHON_LIBRARIES="C:\Program Files\Python35\libs\python35.lib" ^
+-Dtensorflow_ENABLE_GPU=ON ^
+-DCUDNN_HOME="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0" ^
+-Dtensorflow_WIN_CPU_SIMD_OPTIONS=/arch:AVX2 ^
+-Dtensorflow_BUILD_PYTHON_BINDINGS=OFF ^
+-Dtensorflow_ENABLE_GRPC_SUPPORT=ON ^
+-Dtensorflow_BUILD_SHARED_LIB=ON ^
+-Dtensorflow_CUDA_VERSION="10.0" ^
+-Dtensorflow_CUDNN_VERSION="7.5" ^
+-DCUDA_HOST_COMPILER="C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.15.26726/bin/Hostx64/x64/cl.exe"
+```
+* This should result in successful creation of all VS solution and project files inside the 'build' folder.
+* To start the actual compilation process, execute:
+```
+MSBuild /m:4 /p:CL_MPCount=4 /p:Configuration=Release /p:Platform=x64 /p:PreferredToolArchitecture=x64 ALL_BUILD.vcxproj
+```
+* The compilation will take several hours.
 
 
+## Use static libraries in a MSVC++ project
 
+* Create an environment variable 'TENSORFLOW_LIBS' that points to {TF folder}/build
+* Open Visual Studio and create a new C++ project.
+* Add this to the include directories:
+```
+$(TENSORFLOW_LIBS)\external\eigen_archive
+$(TENSORFLOW_LIBS)\..
+$(TENSORFLOW_LIBS)\..\third_party\eigen3
+$(TENSORFLOW_LIBS)\protobuf\src\protobuf\src
+$(TENSORFLOW_LIBS)\external\nsync\public
+$(TENSORFLOW_LIBS)
+$(TENSORFLOW_LIBS)\external\zlib_archive
+$(TENSORFLOW_LIBS)\external\gif_archive\giflib-5.1.4
+$(TENSORFLOW_LIBS)\external\png_archive
+$(TENSORFLOW_LIBS)\external\jpeg_archive
+$(TENSORFLOW_LIBS)\external\lmdb
+$(TENSORFLOW_LIBS)\gemmlowp\src\gemmlowp
+$(TENSORFLOW_LIBS)\jsoncpp\src\jsoncpp
+$(TENSORFLOW_LIBS)\external\farmhash_archive
+$(TENSORFLOW_LIBS)\external\farmhash_archive\util
+$(TENSORFLOW_LIBS)\external\highwayhash
+$(TENSORFLOW_LIBS)\cub\src\cub
+$(TENSORFLOW_LIBS)\re2\install\include
+$(TENSORFLOW_LIBS)\external\sqlite
+$(TENSORFLOW_LIBS)\grpc\src\grpc\include
+$(TENSORFLOW_LIBS)\snappy\src\snappy
+```
+* Add this (and everything else you need, e. g. CUDA) to the linked libraries:
+```
+$(TENSORFLOW_LIBS)\tf_c.dir\Release\tf_c.lib
+$(TENSORFLOW_LIBS)\tf_cc.dir\Release\tf_cc.lib
+$(TENSORFLOW_LIBS)\tf_cc_ops.dir\Release\tf_cc_ops.lib
+$(TENSORFLOW_LIBS)\tf_cc_framework.dir\Release\tf_cc_framework.lib
+$(TENSORFLOW_LIBS)\tf_core_cpu.dir\Release\tf_core_cpu.lib
+$(TENSORFLOW_LIBS)\tf_core_direct_session.dir\Release\tf_core_direct_session.lib
+$(TENSORFLOW_LIBS)\tf_core_framework.dir\Release\tf_core_framework.lib
+$(TENSORFLOW_LIBS)\tf_core_kernels.dir\Release\tf_core_kernels.lib
+$(TENSORFLOW_LIBS)\tf_core_lib.dir\Release\tf_core_lib.lib
+$(TENSORFLOW_LIBS)\tf_core_ops.dir\Release\tf_core_ops.lib
+$(TENSORFLOW_LIBS)\tf_cc_while_loop.dir\Release\tf_cc_while_loop.lib
+$(TENSORFLOW_LIBS)\tf_stream_executor.dir\Release\tf_stream_executor.lib
+$(TENSORFLOW_LIBS)\Release\tf_protos_cc.lib
+$(TENSORFLOW_LIBS)\Release\tf_core_gpu_kernels.lib
+$(TENSORFLOW_LIBS)\zlib\install\lib\zlibstatic.lib
+$(TENSORFLOW_LIBS)\gif\install\lib\giflib.lib
+$(TENSORFLOW_LIBS)\png\install\lib\libpng16_static.lib
+$(TENSORFLOW_LIBS)\jpeg\install\lib\libjpeg.lib
+$(TENSORFLOW_LIBS)\lmdb\install\lib\lmdb.lib
+$(TENSORFLOW_LIBS)\jsoncpp\src\jsoncpp\src\lib_json\Release\jsoncpp.lib
+$(TENSORFLOW_LIBS)\farmhash\install\lib\farmhash.lib
+$(TENSORFLOW_LIBS)\fft2d\\src\lib\fft2d.lib
+$(TENSORFLOW_LIBS)\highwayhash\install\lib\highwayhash.lib
+$(TENSORFLOW_LIBS)\nsync\install\lib\nsync.lib
+$(TENSORFLOW_LIBS)\protobuf\src\protobuf\Release\libprotobuf.lib
+$(TENSORFLOW_LIBS)\re2\src\re2\Release\re2.lib
+$(TENSORFLOW_LIBS)\sqlite\install\lib\sqlite.lib
+$(TENSORFLOW_LIBS)\snappy\src\snappy\Release\snappy.lib
+$(TENSORFLOW_LIBS)\double_conversion\src\double_conversion\Release\double-conversion.lib
+```
+* My preprocessor definitions look like this:
+```
+COMPILER_MSVC
+NOMINMAX
+PLATFORM_WINDOWS
+_SCL_SECURE_NO_WARNINGS
+_WINDLL
+EIGEN_STRONG_INLINE=inline
+SQLITE_OMIT_LOAD_EXTENSION
+EIGEN_AVOID_STL_ARRAY
+_WIN32_WINNT=0x0A00
+LANG_CXX11
+OS_WIN
+_MBCS
+WIN64
+WIN32_LEAN_AND_MEAN
+NOGDI
+TENSORFLOW_USE_EIGEN_THREADPOOL
+EIGEN_HAS_C99_MATH
+TF_COMPILE_LIBRARY
+GRPC_ARES=0
+TF_USE_SNAPPY
+```
+* Other options that deviate from defaults in my projects are:
+```
+/permissive-
+/sdl
+```
+
+## To deallocate GPU memory completely after destroying all tensor objects and sessions
+```c_cpp
+tensorflow::ProcessState::singleton()->~ProcessState();
+```
 
 # Original README below:
 
