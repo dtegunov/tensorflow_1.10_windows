@@ -4,7 +4,7 @@ This is a slightly modified copy of TensorFlow  r1.10. The changes allow full GP
 To compile the static libraries successfully, I used:
 * Visual Studio 2017 (updated to latest version as of November 2018)
 * CUDA 10.0
-* CUDNN 7.5
+* CUDNN 7.4
 * CMake 3.12.3
 * swigwin 3.0.12
 * Python 3.5
