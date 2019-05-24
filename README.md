@@ -132,7 +132,7 @@ TF_USE_SNAPPY
 
 ## To deallocate GPU memory completely after destroying all tensor objects and sessions
 ```c_cpp
-tensorflow::ProcessState::singleton()->~ProcessState();
+tensorflow::GPUProcessState::singleton()->~GPUProcessState();
 ```
 
 # Original README below:
